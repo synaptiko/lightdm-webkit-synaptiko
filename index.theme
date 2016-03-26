@@ -1,6 +1,6 @@
 [theme]
-name=lightdm-webkit-google
-description=A Google/ChromeOS style greeter theme
+name=lightdm-webkit-synaptiko
+description=Greeter theme inspired by other themes
 engine=lightdm-webkit-greeter
 url=index.html
-session=mate
+session=gnome
