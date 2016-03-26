@@ -1,16 +1,12 @@
-function startTime() {
-	var today=new Date();
-	var h=today.getHours();
-	var m=today.getMinutes();
-	m=checkTime(m);
-	document.getElementById('clock').innerHTML=h+":"+m;
+function updateTime() {
+	var now = new Date();
+	var hours = now.getHours();
+	var minutes = now.getMinutes();
 
-	t=setTimeout('startTime()', 500)
+	minutes = (((minutes < 10) ? '0' : '') + minutes);
+	document.getElementById('clock').textContent = (hours + ':' + minutes);
 }
-function checkTime(i) {
-	if (i<10) {
-		i="0" + i;
-	}
-	return i
-}
-window.onload=startTime;
+
+window.addEventListener('load', function() {
+	setInterval(updateTime, 500);
+});
