@@ -1,5 +1,6 @@
 var
 	wallpaperIdx = 0,
+	activeContainer = 'clock',
 	$card = document.getElementById('card'),
 	$clockContainer = document.getElementById('clockContainer'),
 	$loginContainer = document.getElementById('loginContainer'),
@@ -41,20 +42,78 @@ function selectUserFromList(idx) {
 	}
 }
 
-function setClockContainerVisible(visible) { // TODO jprokop: rename it
-	$card.classList[visible ? 'add' : 'remove']('clickable');
-	$clockContainer.classList[!visible ? 'add' : 'remove']('hidden');
-	$clockContainer.classList[visible ? 'add' : 'remove']('in');
-	$loginContainer.classList[visible ? 'add' : 'remove']('hidden');
-	$loginContainer.classList[!visible ? 'add' : 'remove']('in');
+function setWallpaperIdx(idx) {
+	wallpaperIdx = idx;
+	document.body.style.backgroundImage = 'url(./assets/wallpaper/wallpaper' + idx + '.jpg)';
+	localStorage.setItem('synaptiko:wallpaperIdx', idx);
+}
+
+function setContainerVisible($container, visible) {
+	$container.classList[visible ? 'add' : 'remove']('in');
+	$container.classList[!visible ? 'add' : 'remove']('hidden');
+}
+
+function switchToContainer(container) {
+	activeContainer = container;
+	$card.classList[(container === 'clock') ? 'add' : 'remove']('clickable');
+	setContainerVisible($clockContainer, (container === 'clock'));
+	setContainerVisible($loginContainer, (container === 'login'));
+}
+
+function resetPasswordField(options) {
+	options = options || {};
+	$password.classList.remove('invalid');
+	if (!options.preserveValue) {
+		$password.value = '';
+	}
+}
+
+function onUsersChange(e) {
+	e.preventDefault();
+	selectUserFromList(e.currentTarget.selectedIndex);
+	resetPasswordField();
+}
+
+function onCardClick(e) {
+	e.preventDefault();
+	if (activeContainer === 'clock') {
+		switchToContainer('login');
+	}
 }
 
 function onTransitionEnd(e) {
 	var target = e.target;
 	if (target === e.currentTarget && !target.classList.contains('in')) {
 		target.classList.add('hidden');
-		$password.focus(); // TODO jprokop: solve it better way!
+		if (activeContainer === 'login') {
+			$password.focus();
+		}
 	}
+}
+
+function onBodyKeyUp(e) {
+	var newWallpaperIdx;
+
+	if (activeContainer === 'clock' && e.keyCode === 13) { // Enter
+		e.preventDefault();
+		e.stopPropagation();
+		switchToContainer('login');
+	}
+	else if (activeContainer === 'login' && e.keyCode === 27) { // ESC
+		resetPasswordField();
+		switchToContainer('clock');
+	}
+	else if (e.altKey && [37, 39].indexOf(e.keyCode) !== -1) { // Alt + Arrow Left/Right
+		newWallpaperIdx = wallpaperIdx + (e.keyCode === 37 ? -1 : +1);
+		newWallpaperIdx = (newWallpaperIdx < 0 ? 3 : (newWallpaperIdx % 4));
+		setWallpaperIdx(newWallpaperIdx);
+	}
+}
+
+function onLoginFormSubmit(e) {
+	e.preventDefault();
+	resetPasswordField({ preserveValue: true });
+	window.provide_secret();
 }
 
 (function initLightdmApi() {
@@ -79,7 +138,7 @@ function onTransitionEnd(e) {
 		}
 		else {
 			window.start_authentication($users.value);
-			$password.classList.add('invalid'); // TODO jprokop: wrap to some function?
+			resetPasswordField({ preserveValue: true });
 			$password.select();
 		}
 	};
@@ -90,51 +149,17 @@ function onTransitionEnd(e) {
 }());
 
 (function init() {
+	setWallpaperIdx(parseInt(localStorage.getItem('synaptiko:wallpaperIdx'), 10) || 0);
 	setupUserList();
 	selectUserFromList(0);
-
+	// fade the card in
 	setTimeout(function() {
 		$card.classList.add('in');
 	}, 500);
-
-	$users.addEventListener('change', function(e) { // TODO jprokop: wrap to some function?
-		e.preventDefault();
-		selectUserFromList(e.currentTarget.selectedIndex);
-		$password.value = '';
-		$password.classList.remove('invalid');
-	});
-
-	$card.addEventListener('click', function(e) { // TODO jprokop: wrap to some function?
-		e.preventDefault();
-		setClockContainerVisible(false);
-	});
-
+	$users.addEventListener('change', onUsersChange);
+	$card.addEventListener('click', onCardClick);
 	$clockContainer.addEventListener('transitionend', onTransitionEnd);
 	$loginContainer.addEventListener('transitionend', onTransitionEnd);
-
-	document.body.addEventListener('keyup', function(e) { // TODO jprokop: wrap to some function?
-		if (e.keyCode === 13) {
-			e.preventDefault();
-			e.stopPropagation();
-			setClockContainerVisible(false);
-		}
-		else if (e.keyCode === 27) {
-			setClockContainerVisible(true);
-			$password.value = '';
-			$password.classList.remove('invalid');
-		}
-		else if (e.ctrlKey && [37, 39].indexOf(e.keyCode) !== -1) {
-			wallpaperIdx += (e.keyCode === 37 ? -1 : +1);
-			if (wallpaperIdx < 0) wallpaperIdx = 6;
-			wallpaperIdx = (wallpaperIdx % 7);
-			document.body.style.backgroundImage = 'url(./assets/wallpaper/wallpaper' + wallpaperIdx + '.jpg)';
-		}
-	});
-
-	$loginForm.addEventListener('submit', function(e) { // TODO jprokop: wrap to some function?
-		e.preventDefault();
-		$password.classList.remove('invalid');
-		window.provide_secret();
-	});
-
+	document.body.addEventListener('keyup', onBodyKeyUp);
+	$loginForm.addEventListener('submit', onLoginFormSubmit);
 }());
