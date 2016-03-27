@@ -49,10 +49,10 @@ if (!('lightdm' in window)) {
 
 	lightdm.users = [
 		{
-			name: "clarkk",
+			name: "synaptiko",
 			real_name: "Superman",
-			display_name: "Clark Kent",
-			image: "http://uk.omg.li/VDXV/1756295270.jpg.x160.jpg",
+			display_name: "Jiří Prokop",
+			image: "http://www.gravatar.com/avatar/7f405a13d2b6a516b2edae07d7483f94.png",
 			language: "en_US",
 			layout: null,
 			session: null,

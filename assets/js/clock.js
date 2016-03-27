@@ -1,12 +1,12 @@
 function updateTime() {
-	var now = new Date();
-	var hours = now.getHours();
-	var minutes = now.getMinutes();
+	var
+		now = new Date(),
+		hours = now.getHours(),
+		minutes = now.getMinutes();
 
+	hours = (((hours < 10) ? '0' : '') + hours);
 	minutes = (((minutes < 10) ? '0' : '') + minutes);
-	document.getElementById('clock').textContent = (hours + ':' + minutes);
+	document.getElementById('clock').textContent = hours + ':' + minutes;
 }
 
-window.addEventListener('load', function() {
-	setInterval(updateTime, 500);
-});
+setInterval(updateTime, 500);
