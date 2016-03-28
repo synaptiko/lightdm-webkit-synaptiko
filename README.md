@@ -10,11 +10,11 @@ It's written in pure css and javascript, **without any deps** like various trans
 
 **It has clock!**
 
-![Clocks](/../screenshots/preview.png?raw=true)
+![Clocks](/../screenshots/preview-clock.png?raw=true)
 
 **…and login dialog too**
 
-![Login screen](/../screenshots/preview.png?raw=true)
+![Login screen](/../screenshots/preview-login.png?raw=true)
 
 ### Features
 
