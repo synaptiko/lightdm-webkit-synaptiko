@@ -43,8 +43,10 @@ Instructions will differ for every platform, but I can tell you how to install i
 3. Clone this repository here, into a folder called `synaptiko`
 4. Enable the theme in your `/etc/lightdm/lightdm-webkit-greeter2.conf` as follows:
 
-    [greeter]
-    webkit-theme=synaptiko
+```
+[greeter]
+webkit-theme=synaptiko
+```
 
 ### Setting your own user picture
 
