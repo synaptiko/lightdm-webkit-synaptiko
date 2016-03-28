@@ -54,7 +54,7 @@ webkit-theme=synaptiko
 
 There are a couple of methods you can use to set your user picture in LightDM:
 
-- Put a `jpg` of your face in your home directory as a file called `.face`
+- ~~Put a `jpg` of your face in your home directory as a file called `.face`~~ (it doesn't work in currect version of LightDM although it's ok in test mode)
 
 or
 
