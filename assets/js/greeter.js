@@ -138,7 +138,7 @@ function onLoginFormSubmit(e) {
 		}
 		else {
 			window.start_authentication($users.value);
-			resetPasswordField({ preserveValue: true });
+			$password.classList.add('invalid');
 			$password.select();
 		}
 	};
