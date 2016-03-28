@@ -1,6 +1,8 @@
 var
 	wallpaperIdx = 0,
 	activeContainer = 'clock',
+	profileImages = [],
+	$wrapper = document.getElementById('wrapper'),
 	$card = document.getElementById('card'),
 	$clockContainer = document.getElementById('clockContainer'),
 	$loginContainer = document.getElementById('loginContainer'),
@@ -10,17 +12,22 @@ var
 	$profileImage = document.getElementById('profileImage');
 
 function setupUserList() {
-	lightdm.users.forEach(function(user) {
+	lightdm.users.forEach(function(user, idx) {
 		var $option = document.createElement('option');
 		$option.value = user.name;
 		$option.textContent = user.display_name;
 		$users.appendChild($option);
+
+		profileImages[idx] = false;
+		waitForImage(user.image, function() {
+			profileImages[idx] = user.image;
+		});
 	});
 }
 
 function selectUserFromList(idx) {
 	var
-		profileImageSrc = lightdm.users[idx].image,
+		profileImageSrc = profileImages[idx],
 		selectedUser;
 
 	if (profileImageSrc) {
@@ -42,10 +49,40 @@ function selectUserFromList(idx) {
 	}
 }
 
-function setWallpaperIdx(idx) {
+function waitForImage(url, callback) {
+	var image = new Image();
+	image.addEventListener('load', callback);
+	image.src = url;
+}
+
+function setWallpaperIdx(idx, callback) {
+	var imageUrl = './assets/wallpaper/wallpaper' + idx + '.jpg';
+
 	wallpaperIdx = idx;
-	document.body.style.backgroundImage = 'url(./assets/wallpaper/wallpaper' + idx + '.jpg)';
+	$wrapper.style.backgroundImage = 'url(' + imageUrl + ')';
 	localStorage.setItem('synaptiko:wallpaperIdx', idx);
+
+	if (callback) {
+		waitForImage(imageUrl, callbackUntilTimeout(callback, 1000));
+	}
+}
+
+function callbackUntilTimeout(callback, timeout) {
+	var
+		resolved = false,
+		timeoutId = setTimeout(resolver, timeout);
+
+	function resolver() {
+		if (!resolved) {
+			resolved = true;
+			if (timeoutId !== false) {
+				clearTimeout(timeoutId);
+				timeoutId = false;
+			}
+			callback();
+		}
+	}
+	return resolver;
 }
 
 function setContainerVisible($container, visible) {
@@ -58,6 +95,14 @@ function switchToContainer(container) {
 	$card.classList[(container === 'clock') ? 'add' : 'remove']('clickable');
 	setContainerVisible($clockContainer, (container === 'clock'));
 	setContainerVisible($loginContainer, (container === 'login'));
+
+	if (container === 'clock') {
+		resetPasswordField();
+	}
+	else { // container === 'login'
+		selectUserFromList($users.selectedIndex);
+		resetPasswordField();
+	}
 }
 
 function resetPasswordField(options) {
@@ -100,7 +145,6 @@ function onBodyKeyUp(e) {
 		switchToContainer('login');
 	}
 	else if (activeContainer === 'login' && e.keyCode === 27) { // ESC
-		resetPasswordField();
 		switchToContainer('clock');
 	}
 	else if (e.altKey && [37, 39].indexOf(e.keyCode) !== -1) { // Alt + Arrow Left/Right
@@ -149,13 +193,15 @@ function onLoginFormSubmit(e) {
 }());
 
 (function init() {
-	setWallpaperIdx(parseInt(localStorage.getItem('synaptiko:wallpaperIdx'), 10) || 0);
+	setWallpaperIdx(parseInt(localStorage.getItem('synaptiko:wallpaperIdx'), 10) || 0, function() {
+		$wrapper.classList.add('in');
+		// fade the card in
+		setTimeout(function() {
+			$card.classList.add('in');
+		}, 500);
+	});
 	setupUserList();
 	selectUserFromList(0);
-	// fade the card in
-	setTimeout(function() {
-		$card.classList.add('in');
-	}, 500);
 	$users.addEventListener('change', onUsersChange);
 	$card.addEventListener('click', onCardClick);
 	$clockContainer.addEventListener('transitionend', onTransitionEnd);

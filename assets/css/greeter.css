@@ -10,9 +10,6 @@ body {
 	padding: 0;
 	font-family: 'DejaVu Sans Condensed';
 	background-color: #eceff1;
-	background-image: url(../wallpaper/wallpaper0.jpg);
-	background-size: cover;
-	background-position: center;
 }
 
 .fade {
@@ -43,6 +40,8 @@ body {
 
 #wrapper {
 	height: 100%;
+	background-size: cover;
+	background-position: center;
 }
 
 #wrapper,
@@ -154,8 +153,9 @@ body {
 
 select,
 input[type=password] {
-	-webkit-appearance: none;
 	flex: 1;
+	-webkit-appearance: none;
+	margin: 0;
 	padding: 0 8px;
 	font-family: 'DejaVu Sans Condensed';
 	font-size: 14px;

@@ -72,7 +72,7 @@ if (!('lightdm' in window)) {
 			name: "peterp",
 			real_name:"Spiderman",
 			display_name: "Peter Parker",
-			image: "",
+			image: "/nothing",
 			language: "en_US",
 			layout: null,
 			session: null,
