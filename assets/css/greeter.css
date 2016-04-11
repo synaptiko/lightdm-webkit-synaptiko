@@ -147,7 +147,7 @@ select,
 input[type=password] {
 	flex: 1;
 	-webkit-appearance: none;
-	margin: 0;
+	height: 28px;
 	padding: 0 8px;
 	margin: 5px 0;
 	font-family: 'DejaVu Sans Condensed';
