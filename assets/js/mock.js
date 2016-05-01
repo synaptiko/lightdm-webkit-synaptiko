@@ -198,8 +198,7 @@ if (!('lightdm' in window)) {
 	config.get_str = function(section, key) {
 		var branding = {
 			logo: 'img/arch.png',
-			user_logo: 'img/arch-logo-user.png',
-			background_images: '/usr/share/antergos/wallpapers'
+			background_image: 'file:///usr/share/lightdm-webkit/theme/antergos/img/fallback_bg.jpg'
 		};
 		if (section === 'branding') {
 			return branding[key];
@@ -210,12 +209,7 @@ if (!('lightdm' in window)) {
 	};
 
 	greeterutil.dirlist = function(directory) {
-		if (directory === '/usr/share/antergos/wallpapers') {
-			return [
-				'/usr/share/antergos/wallpapers/aaa.jpg',
-				'/usr/share/antergos/wallpapers/bbb.png'
-			]
-		}
+		return [];
 	};
 }
 

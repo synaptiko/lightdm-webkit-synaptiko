@@ -1,9 +1,8 @@
 var
-	wallpaperIdx = 0,
 	activeContainer = 'clock',
 	profileImages = [],
 	$wrapper = document.getElementById('wrapper'),
-	$card = document.getElementById('card'),
+	$logoContainer = document.getElementById('logoContainer'),
 	$clockContainer = document.getElementById('clockContainer'),
 	$loginContainer = document.getElementById('loginContainer'),
 	$loginForm = document.getElementById('loginForm'),
@@ -32,7 +31,7 @@ function selectUserFromList(idx) {
 
 	if (profileImageSrc) {
 		$profileImage.classList.remove('unknown');
-		$profileImage.style.backgroundImage = 'url(' + profileImageSrc + ')';
+		$profileImage.style.backgroundImage = `url(${profileImageSrc})`;
 	}
 	else {
 		$profileImage.classList.add('unknown');
@@ -55,15 +54,26 @@ function waitForImage(url, callback) {
 	image.src = url;
 }
 
-function setWallpaperIdx(idx, callback) {
-	var imageUrl = './assets/wallpaper/wallpaper' + idx + '.jpg';
+function setWallpaper(callback) {
+	var imageUrl = getConfig('background_image');
 
-	wallpaperIdx = idx;
-	$wrapper.style.backgroundImage = 'url(' + imageUrl + ')';
-	localStorage.setItem('synaptiko:wallpaperIdx', idx);
+	if (imageUrl) {
+		if (callback) {
+			waitForImage(imageUrl, callbackUntilTimeout(callback, 1000));
+		}
+		$wrapper.style.backgroundImage = `url(${imageUrl})`;
+	}
+	else {
+		callback();
+	}
+}
 
-	if (callback) {
-		waitForImage(imageUrl, callbackUntilTimeout(callback, 1000));
+function getConfig(key) {
+	try {
+		return config.get_str('branding', key);
+	}
+	catch (e) {
+		return undefined;
 	}
 }
 
@@ -92,9 +102,11 @@ function setContainerVisible($container, visible) {
 
 function switchToContainer(container) {
 	activeContainer = container;
-	$card.classList[(container === 'clock') ? 'add' : 'remove']('clickable');
 	setContainerVisible($clockContainer, (container === 'clock'));
 	setContainerVisible($loginContainer, (container === 'login'));
+
+	$logoContainer.classList[container === 'clock' ? 'add' : 'remove']('footer');
+	$logoContainer.classList[container === 'login' ? 'add' : 'remove']('header');
 
 	if (container === 'clock') {
 		resetPasswordField();
@@ -119,7 +131,7 @@ function onUsersChange(e) {
 	resetPasswordField();
 }
 
-function onCardClick(e) {
+function onScreenClick(e) {
 	e.preventDefault();
 	if (activeContainer === 'clock') {
 		switchToContainer('login');
@@ -137,8 +149,6 @@ function onTransitionEnd(e) {
 }
 
 function onBodyKeyUp(e) {
-	var newWallpaperIdx;
-
 	if (activeContainer === 'clock' && e.keyCode === 13) { // Enter
 		e.preventDefault();
 		e.stopPropagation();
@@ -146,11 +156,6 @@ function onBodyKeyUp(e) {
 	}
 	else if (activeContainer === 'login' && e.keyCode === 27) { // ESC
 		switchToContainer('clock');
-	}
-	else if (e.altKey && [37, 39].indexOf(e.keyCode) !== -1) { // Alt + Arrow Left/Right
-		newWallpaperIdx = wallpaperIdx + (e.keyCode === 37 ? -1 : +1);
-		newWallpaperIdx = (newWallpaperIdx < 0 ? 3 : (newWallpaperIdx % 4));
-		setWallpaperIdx(newWallpaperIdx);
 	}
 }
 
@@ -183,6 +188,7 @@ function onLoginFormSubmit(e) {
 		else {
 			window.start_authentication($users.value);
 			resetPasswordField({ preserveValue: true });
+			$password.classList.add('invalid');
 			$password.select();
 		}
 	};
@@ -193,19 +199,22 @@ function onLoginFormSubmit(e) {
 }());
 
 (function init() {
-	setWallpaperIdx(parseInt(localStorage.getItem('synaptiko:wallpaperIdx'), 10) || 0, function() {
+	setWallpaper(function() {
 		$wrapper.classList.add('in');
-		// fade the card in
 		setTimeout(function() {
-			$card.classList.add('in');
+			$clockContainer.classList.add('in');
+			$clockContainer.addEventListener('transitionend', function initialClockContainerFadeIn() {
+				$clockContainer.classList.add('up');
+				$clockContainer.removeEventListener('transitionend', initialClockContainerFadeIn);
+			});
 		}, 500);
 	});
 	setupUserList();
 	selectUserFromList(0);
 	$users.addEventListener('change', onUsersChange);
-	$card.addEventListener('click', onCardClick);
 	$clockContainer.addEventListener('transitionend', onTransitionEnd);
 	$loginContainer.addEventListener('transitionend', onTransitionEnd);
+	document.body.addEventListener('click', onScreenClick);
 	document.body.addEventListener('keyup', onBodyKeyUp);
 	$loginForm.addEventListener('submit', onLoginFormSubmit);
 }());

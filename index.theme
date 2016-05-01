@@ -1,6 +1,6 @@
 [theme]
-name=lightdm-webkit-synaptiko
+name=lightdm-webkit2-synaptiko
 description=Greeter theme inspired by other themes
-engine=lightdm-webkit-greeter
+engine=lightdm-webkit2-greeter
 url=index.html
 session=gnome

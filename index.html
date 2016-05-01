@@ -2,29 +2,27 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="assets/font/stylesheet.css" />
 	<link rel="stylesheet" href="assets/css/greeter.css" />
 </head>
 <body>
 	<div id="wrapper" class="fade">
-		<div id="card" class="clickable fade">
-			<div id="header">
-				<img id="archLogo" src="assets/ui/archlogo.png"></img>
-			</div>
-			<div id="cardContent">
-				<div id="clockContainer" class="fade move up in">
-					<div id="clock"></div>
-				</div>
-				<div id="loginContainer" class="fade move down hidden">
-					<div id="profileImage"></div>
-					<form id="loginForm">
-						<select id="users"></select>
-						<input id="password" placeholder="Password" type="password"/>
-					</form>
-				</div>
+		<div id="clockContainer" class="fade move clickable">
+			<div id="clock"></div>
+		</div>
+		<div id="loginContainer" class="fade move down hidden">
+			<div id="loginFormContainer">
+				<div id="profileImage"></div>
+				<form id="loginForm">
+					<select id="users"></select>
+					<input id="password" placeholder="Password" type="password"/>
+				</form>
 			</div>
 		</div>
+		<div id="logoContainer" class="footer">
+			<img id="logo" src="assets/ui/archlogo.png"></img>
+		</div>
 	</div>
+
 
 	<script src="assets/js/mock.js"></script>
 	<script src="assets/js/clock.js"></script>
