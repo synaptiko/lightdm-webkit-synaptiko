@@ -55,7 +55,9 @@ function waitForImage(url, callback) {
 }
 
 function setWallpaper(callback) {
-	var imageUrl = getConfig('background_image');
+	var backgroundImagesDir = greeter_config.branding.background_images;
+	var images = ThemeUtils.dirlist(backgroundImagesDir);
+	var imageUrl = images[0];
 
 	if (imageUrl) {
 		if (callback) {
@@ -65,15 +67,6 @@ function setWallpaper(callback) {
 	}
 	else {
 		callback();
-	}
-}
-
-function getConfig(key) {
-	try {
-		return config.get_str('branding', key);
-	}
-	catch (e) {
-		return undefined;
 	}
 }
 
