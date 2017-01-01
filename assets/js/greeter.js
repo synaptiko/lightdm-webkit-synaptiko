@@ -55,7 +55,7 @@ function waitForImage(url, callback) {
 }
 
 function setWallpaper(callback) {
-	var backgroundImagesDir = greeter_config.branding.background_images;
+	var backgroundImagesDir = config.get_str('branding', 'background_images') || '/usr/share/backgrounds'
 	var images = theme_utils.dirlist(backgroundImagesDir);
 	var imageUrl = images[0];
 
