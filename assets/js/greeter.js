@@ -56,7 +56,7 @@ function waitForImage(url, callback) {
 
 function setWallpaper(callback) {
 	var backgroundImagesDir = greeter_config.branding.background_images;
-	var images = ThemeUtils.dirlist(backgroundImagesDir);
+	var images = theme_utils.dirlist(backgroundImagesDir);
 	var imageUrl = images[0];
 
 	if (imageUrl) {
